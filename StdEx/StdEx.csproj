@@ -5,7 +5,6 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <PackageId>StdEx</PackageId>
-    <Version>1.0.0</Version>
     <Authors>Chunguang Zhou</Authors>
     <Description>A utility library based on .NET Standard, providing utilities for TMDb API integration, JSON and XML serialization.</Description>
     <PackageTags>TMDB;JSON;XML;Serialization;NFO;Movies</PackageTags>

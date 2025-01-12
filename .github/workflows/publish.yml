@@ -12,6 +12,17 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      id: gitversion
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -25,7 +36,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --output ./nupkg
+      run: dotnet pack StdEx/StdEx.csproj --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.gitversion.outputs.semVer }}
 
     - name: Publish to NuGet
       env:
