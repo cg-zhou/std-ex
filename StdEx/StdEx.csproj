@@ -4,9 +4,20 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <PackageId>StdEx</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Chunguang Zhou</Authors>
+    <Description>A utility library based on .NET Standard, providing utilities for TMDb API integration, JSON and XML serialization.</Description>
+    <PackageTags>TMDB;JSON;XML;Serialization;NFO;Movies</PackageTags>
+    <RepositoryUrl>https://github.com/cg-zhou/StdEx</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/cg-zhou/StdEx</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
