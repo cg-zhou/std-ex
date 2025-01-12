@@ -45,3 +45,6 @@ _ReSharper*/
 
 # Others
 *.cache
+
+# TMDB API Key
+**/appsettings*.json
