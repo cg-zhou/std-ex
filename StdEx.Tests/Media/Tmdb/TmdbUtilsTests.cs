@@ -2,7 +2,6 @@ using Shouldly;
 using StdEx.Media.Tmdb;
 using StdEx.Media.Tmdb.Models;
 using StdEx.Serialization;
-using System.IO;
 
 namespace StdEx.Tests.Media.Tmdb
 {
@@ -13,7 +12,7 @@ namespace StdEx.Tests.Media.Tmdb
         public TmdbUtilsTests()
         {
             var config = LoadTmdbConfig();
-            _tmdbUtils = new TmdbUtils(config.BearerToken);
+            _tmdbUtils = new TmdbUtils(config);
         }
 
         private TmdbConfig LoadTmdbConfig()
@@ -33,32 +32,51 @@ namespace StdEx.Tests.Media.Tmdb
         }
 
         [Fact]
-        public async Task GenerateMovieNfo_ShouldWork()
+        public async Task GetMovieNfo_ShouldWork()
         {
             // Arrange
             var movieName = "Inception";
 
             // Act
-            var result = await _tmdbUtils.GenerateMovieNfo(movieName);
+            var result = await _tmdbUtils.GetMovieNfo(movieName);
 
             // Assert
-            result.ShouldNotBeNullOrEmpty();
-            result.ShouldContain("<title>");
-            result.ShouldContain("<plot>");
-            result.ShouldContain("<year>");
+            result.ShouldNotBeNull();
+            result.Title.ShouldNotBeNullOrEmpty();
+            result.Plot.ShouldNotBeNullOrEmpty();
+            result.Year.ShouldBeGreaterThan(0);
+            result.Rating.ShouldBeGreaterThan(0);
+            result.Id.ShouldBeGreaterThan(0);
         }
 
         [Fact]
-        public async Task GenerateMovieNfo_WithInvalidMovie_ShouldThrow()
+        public async Task GetMovieNfo_WithInvalidMovie_ShouldThrow()
         {
             // Arrange
             var invalidMovieName = "ThisMovieDoesNotExist12345";
 
             // Act & Assert
             var exception = await Should.ThrowAsync<Exception>(async () =>
-                await _tmdbUtils.GenerateMovieNfo(invalidMovieName));
+                await _tmdbUtils.GetMovieNfo(invalidMovieName));
 
             exception.Message.ShouldBe($"Movie not found: {invalidMovieName}");
+        }
+
+        [Fact]
+        public async Task GetMovieNfo_ShouldGenerateValidXml()
+        {
+            // Arrange
+            var movieName = "Inception";
+
+            // Act
+            var movieNfo = await _tmdbUtils.GetMovieNfo(movieName);
+            var xml = XmlUtils.Serialize(movieNfo);
+
+            // Assert
+            xml.ShouldNotBeNullOrEmpty();
+            xml.ShouldContain("<title>");
+            xml.ShouldContain("<plot>");
+            xml.ShouldContain("<year>");
         }
     }
 }

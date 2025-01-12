@@ -1,4 +1,5 @@
 ﻿using StdEx.Media.Tmdb;
+using StdEx.Serialization;
 
 public class Program
 {
@@ -87,21 +88,32 @@ public class Program
         Console.WriteLine("\nProcessing video files:");
         Console.WriteLine("======================");
 
+        int processed = 0;
+        int skipped = 0;
+
         foreach (var file in fileList)
         {
             try
             {
+                var nfoPath = Path.ChangeExtension(file.FullName, ".nfo");
+                
+                // Check if NFO file already exists
+                if (File.Exists(nfoPath))
+                {
+                    Console.WriteLine($"Skipped {file.Name} (NFO already exists)");
+                    skipped++;
+                    continue;
+                }
+
                 Console.Write($"Processing {file.Name}... ");
 
-                // 使用文件名（不含扩展名）作为电影名称
-                var movieName = Path.GetFileNameWithoutExtension(file.Name);
-                var nfoContent = await tmdb.GenerateMovieNfo(movieName);
-
-                // 创建同名的 .nfo 文件
-                var nfoPath = Path.ChangeExtension(file.FullName, ".nfo");
+                var movieName = GetMovieName(file.Name);
+                var movieNfo = await tmdb.GetMovieNfo(movieName);
+                var nfoContent = XmlUtils.Serialize(movieNfo);
                 await File.WriteAllTextAsync(nfoPath, nfoContent);
 
                 Console.WriteLine("Done");
+                processed++;
             }
             catch (Exception ex)
             {
@@ -109,6 +121,19 @@ public class Program
             }
         }
 
-        Console.WriteLine($"\nProcessed: {fileList.Count} files");
+        Console.WriteLine($"\nSummary:");
+        Console.WriteLine($"Processed: {processed} files");
+        Console.WriteLine($"Skipped: {skipped} files");
+        Console.WriteLine($"Total: {fileList.Count} files");
+    }
+
+    private static string GetMovieName(string fileName)
+    {
+        // Remove extension first
+        var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+        // Split by dot and take first part
+        var parts = nameWithoutExtension.Split('.');
+        return parts[0].Trim();
     }
 }

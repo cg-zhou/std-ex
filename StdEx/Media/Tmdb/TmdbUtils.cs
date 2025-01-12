@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using StdEx.Media.Tmdb.Models;
-using StdEx.Serialization;
 using System;
 using System.Linq;
 using System.Net;
@@ -16,6 +15,7 @@ namespace StdEx.Media.Tmdb
         private readonly string _bearerToken;
         private readonly string _baseApiUrl;
         private readonly string _baseImageUrl;
+        private readonly string _language;
 
         public TmdbUtils(string bearerToken, int timeoutSeconds = 10)
             : this(new TmdbConfig { BearerToken = bearerToken }, timeoutSeconds)
@@ -27,6 +27,7 @@ namespace StdEx.Media.Tmdb
             _bearerToken = config.BearerToken;
             _baseApiUrl = config.BaseApiUrl;
             _baseImageUrl = config.BaseImageUrl;
+            _language = config.Language;
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -47,9 +48,9 @@ namespace StdEx.Media.Tmdb
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
         }
 
-        public async Task<string> GenerateMovieNfo(string movieName)
+        public async Task<MovieNfo> GetMovieNfo(string movieName)
         {
-            var searchUrl = $"{_baseApiUrl}/search/movie?query={Uri.EscapeDataString(movieName)}";
+            var searchUrl = $"{_baseApiUrl}/search/movie?query={Uri.EscapeDataString(movieName)}&language={_language}";
             var searchResponse = await GetJsonAsync<TmdbSearchResponse>(searchUrl);
 
             if (searchResponse?.Results == null || !searchResponse.Results.Any())
@@ -58,10 +59,10 @@ namespace StdEx.Media.Tmdb
             }
 
             var movieId = searchResponse.Results.First().Id;
-            var movieUrl = $"{_baseApiUrl}/movie/{movieId}?append_to_response=credits";
+            var movieUrl = $"{_baseApiUrl}/movie/{movieId}?append_to_response=credits&language={_language}";
             var movie = await GetJsonAsync<TmdbMovie>(movieUrl);
 
-            return CreateNfoXml(movie);
+            return CreateMovieNfo(movie);
         }
 
         private async Task<T> GetJsonAsync<T>(string url) where T : class
@@ -82,9 +83,9 @@ namespace StdEx.Media.Tmdb
             return obj;
         }
 
-        private string CreateNfoXml(TmdbMovie movie)
+        private MovieNfo CreateMovieNfo(TmdbMovie movie)
         {
-            var nfo = new MovieNfo
+            return new MovieNfo
             {
                 Title = movie.Title,
                 OriginalTitle = movie.OriginalTitle,
@@ -101,8 +102,6 @@ namespace StdEx.Media.Tmdb
                     .Select(c => c.Name)),
                 Premiered = movie.ReleaseDate
             };
-
-            return XmlUtils.Serialize(nfo);
         }
     }
 }

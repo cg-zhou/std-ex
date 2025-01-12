@@ -1,6 +1,5 @@
 using Shouldly;
 using StdEx.Serialization;
-using System;
 
 namespace StdEx.Tests.Serialization
 {
