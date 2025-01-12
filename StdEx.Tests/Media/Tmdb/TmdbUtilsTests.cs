@@ -45,8 +45,10 @@ namespace StdEx.Tests.Media.Tmdb
             result.Title.ShouldNotBeNullOrEmpty();
             result.Plot.ShouldNotBeNullOrEmpty();
             result.Year.ShouldBeGreaterThan(0);
-            result.Rating.ShouldBeGreaterThan(0);
+            result.Ratings.Rating.Value.ShouldBeGreaterThan(0);
             result.Id.ShouldBeGreaterThan(0);
+            result.Art.Poster.ShouldNotBeNullOrEmpty();
+            result.Art.Fanart.ShouldNotBeNullOrEmpty();
         }
 
         [Fact]
@@ -77,6 +79,11 @@ namespace StdEx.Tests.Media.Tmdb
             xml.ShouldContain("<title>");
             xml.ShouldContain("<plot>");
             xml.ShouldContain("<year>");
+            xml.ShouldContain("<ratings>");
+            xml.ShouldContain("<rating name=\"tmdb\" max=\"10\">");
+            xml.ShouldContain("<art>");
+            xml.ShouldContain("<poster>");
+            xml.ShouldContain("<fanart>");
         }
     }
 }

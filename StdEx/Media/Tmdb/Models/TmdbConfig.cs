@@ -11,4 +11,4 @@ namespace StdEx.Media.Tmdb.Models
         public string BaseImageUrl { get; set; } = DefaultBaseImageUrl;
         public string Language { get; set; } = DefaultLanguage;
     }
-} 
+}

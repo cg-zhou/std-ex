@@ -90,11 +90,17 @@ namespace StdEx.Media.Tmdb
                 Title = movie.Title,
                 OriginalTitle = movie.OriginalTitle,
                 SortTitle = movie.Title,
-                Rating = movie.VoteAverage,
+                Ratings = new Ratings
+                {
+                    Rating = new Rating { Value = movie.VoteAverage }
+                },
                 Year = DateTime.Parse(movie.ReleaseDate).Year,
                 Plot = movie.Overview,
-                Thumb = $"{_baseImageUrl}{movie.PosterPath}",
-                Fanart = $"{_baseImageUrl}{movie.BackdropPath}",
+                Art = new Art
+                {
+                    Poster = $"{_baseImageUrl}{movie.PosterPath}",
+                    Fanart = $"{_baseImageUrl}{movie.BackdropPath}"
+                },
                 Id = movie.Id,
                 Genre = string.Join(" / ", movie.Genres.Select(g => g.Name)),
                 Director = string.Join(" / ", movie.Credits.Crew
