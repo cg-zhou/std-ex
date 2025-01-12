@@ -14,12 +14,19 @@ namespace StdEx.Media.Tmdb
     {
         private readonly HttpClient _httpClient;
         private readonly string _bearerToken;
-        private const string BaseApiUrl = "http://api.tmdb.org/3";
-        private const string BaseImageUrl = "https://image.tmdb.org/t/p/original";
+        private readonly string _baseApiUrl;
+        private readonly string _baseImageUrl;
 
         public TmdbUtils(string bearerToken, int timeoutSeconds = 10)
+            : this(new TmdbConfig { BearerToken = bearerToken }, timeoutSeconds)
         {
-            _bearerToken = bearerToken;
+        }
+
+        public TmdbUtils(TmdbConfig config, int timeoutSeconds = 10)
+        {
+            _bearerToken = config.BearerToken;
+            _baseApiUrl = config.BaseApiUrl;
+            _baseImageUrl = config.BaseImageUrl;
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -42,7 +49,7 @@ namespace StdEx.Media.Tmdb
 
         public async Task<string> GenerateMovieNfo(string movieName)
         {
-            var searchUrl = $"{BaseApiUrl}/search/movie?query={Uri.EscapeDataString(movieName)}";
+            var searchUrl = $"{_baseApiUrl}/search/movie?query={Uri.EscapeDataString(movieName)}";
             var searchResponse = await GetJsonAsync<TmdbSearchResponse>(searchUrl);
 
             if (searchResponse?.Results == null || !searchResponse.Results.Any())
@@ -51,7 +58,7 @@ namespace StdEx.Media.Tmdb
             }
 
             var movieId = searchResponse.Results.First().Id;
-            var movieUrl = $"{BaseApiUrl}/movie/{movieId}?append_to_response=credits";
+            var movieUrl = $"{_baseApiUrl}/movie/{movieId}?append_to_response=credits";
             var movie = await GetJsonAsync<TmdbMovie>(movieUrl);
 
             return CreateNfoXml(movie);
@@ -87,8 +94,8 @@ namespace StdEx.Media.Tmdb
                     new XElement("rating", movie.VoteAverage),
                     new XElement("year", DateTime.Parse(movie.ReleaseDate).Year),
                     new XElement("plot", movie.Overview),
-                    new XElement("thumb", $"{BaseImageUrl}{movie.PosterPath}"),
-                    new XElement("fanart", $"{BaseImageUrl}{movie.BackdropPath}"),
+                    new XElement("thumb", $"{_baseImageUrl}{movie.PosterPath}"),
+                    new XElement("fanart", $"{_baseImageUrl}{movie.BackdropPath}"),
                     new XElement("id", movie.Id),
                     new XElement("genre", string.Join(" / ", movie.Genres.Select(g => g.Name))),
                     new XElement("director", string.Join(" / ", movie.Credits.Crew

@@ -1,7 +1,6 @@
-using System;
-using Xunit;
-using System.Xml.Serialization;
+using Shouldly;
 using StdEx.Serialization;
+using System;
 
 namespace StdEx.Tests.Serialization
 {
@@ -14,7 +13,7 @@ namespace StdEx.Tests.Serialization
             var testObject = new TestClass
             {
                 Id = 1,
-                Name = "ÊµãËØïÂêçÁß∞",
+                Name = "≤‚ ‘√˚≥∆",
                 CreatedDate = new DateTime(2024, 3, 20)
             };
 
@@ -23,23 +22,29 @@ namespace StdEx.Tests.Serialization
             var deserializedObject = XmlUtils.Deserialize<TestClass>(xml);
 
             // Assert
-            Assert.NotNull(deserializedObject);
-            Assert.Equal(testObject.Id, deserializedObject.Id);
-            Assert.Equal(testObject.Name, deserializedObject.Name);
-            Assert.Equal(testObject.CreatedDate, deserializedObject.CreatedDate);
+            deserializedObject.ShouldNotBeNull();
+            deserializedObject.Id.ShouldBe(testObject.Id);
+            deserializedObject.Name.ShouldBe(testObject.Name);
+            deserializedObject.CreatedDate.ShouldBe(testObject.CreatedDate);
         }
 
         [Fact]
-        public void Serialize_NullObject_ShouldThrowException()
+        public void Serialize_NullObject_ShouldThrow()
         {
+            // Arrange
             TestClass? testObject = null;
-            Assert.Throws<ArgumentNullException>(() => XmlUtils.Serialize(testObject));
+
+            // Act & Assert
+            Should.Throw<ArgumentNullException>(() => 
+                XmlUtils.Serialize(testObject));
         }
 
         [Fact]
-        public void Deserialize_EmptyString_ShouldThrowException()
+        public void Deserialize_EmptyString_ShouldThrow()
         {
-            Assert.Throws<ArgumentNullException>(() => XmlUtils.Deserialize<TestClass>(""));
+            // Act & Assert
+            Should.Throw<ArgumentNullException>(() => 
+                XmlUtils.Deserialize<TestClass>(""));
         }
     }
 

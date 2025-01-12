@@ -1,4 +1,8 @@
+using Shouldly;
 using StdEx.Media.Tmdb;
+using StdEx.Media.Tmdb.Models;
+using StdEx.Serialization;
+using System.IO;
 
 namespace StdEx.Tests.Media.Tmdb
 {
@@ -8,13 +12,28 @@ namespace StdEx.Tests.Media.Tmdb
 
         public TmdbUtilsTests()
         {
-            // Bearer token here
-            const string yourApiBearerToken = "eyJhbGci...";
-            _tmdbUtils = new TmdbUtils(yourApiBearerToken);
+            var config = LoadTmdbConfig();
+            _tmdbUtils = new TmdbUtils(config.BearerToken);
+        }
+
+        private TmdbConfig LoadTmdbConfig()
+        {
+            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "tmdbsettings.local.json");
+            if (!File.Exists(configPath))
+            {
+                throw new FileNotFoundException(
+                    "Please create tmdbsettings.local.json based on tmdbsettings.example.json");
+            }
+
+            var json = File.ReadAllText(configPath);
+            var config = JsonUtils.Deserialize<TmdbConfig>(json);
+            config.ShouldNotBeNull("Failed to load TMDB configuration");
+
+            return config;
         }
 
         [Fact]
-        public async Task GenerateMovieNfo_ShouldReturnValidXml()
+        public async Task GenerateMovieNfo_ShouldWork()
         {
             // Arrange
             var movieName = "Inception";
@@ -23,20 +42,23 @@ namespace StdEx.Tests.Media.Tmdb
             var result = await _tmdbUtils.GenerateMovieNfo(movieName);
 
             // Assert
-            Assert.Contains("<title>", result);
-            Assert.Contains("<plot>", result);
-            Assert.Contains("<year>", result);
+            result.ShouldNotBeNullOrEmpty();
+            result.ShouldContain("<title>");
+            result.ShouldContain("<plot>");
+            result.ShouldContain("<year>");
         }
 
         [Fact]
-        public async Task GenerateMovieNfo_WithInvalidMovie_ShouldThrowException()
+        public async Task GenerateMovieNfo_WithInvalidMovie_ShouldThrow()
         {
             // Arrange
             var invalidMovieName = "ThisMovieDoesNotExist12345";
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() =>
-                _tmdbUtils.GenerateMovieNfo(invalidMovieName));
+            var exception = await Should.ThrowAsync<Exception>(async () =>
+                await _tmdbUtils.GenerateMovieNfo(invalidMovieName));
+
+            exception.Message.ShouldBe($"Movie not found: {invalidMovieName}");
         }
     }
 }

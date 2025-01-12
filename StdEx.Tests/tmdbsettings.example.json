@@ -1,0 +1,5 @@
+{
+    "BearerToken": "your_bearer_token_here",
+    "BaseApiUrl": "http://api.tmdb.org/3",
+    "BaseImageUrl": "https://image.tmdb.org/t/p/original"
+} 

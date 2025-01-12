@@ -48,3 +48,6 @@ _ReSharper*/
 
 # TMDB API Key
 **/appsettings*.json
+
+# TMDB local settings
+**/tmdbsettings.local.json
