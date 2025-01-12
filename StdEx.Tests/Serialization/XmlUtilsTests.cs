@@ -13,7 +13,7 @@ namespace StdEx.Tests.Serialization
             var testObject = new TestClass
             {
                 Id = 1,
-                Name = "²âÊÔÃû³Æ",
+                Name = "æµ‹è¯•åç§°",
                 CreatedDate = new DateTime(2024, 3, 20)
             };
 
@@ -32,7 +32,7 @@ namespace StdEx.Tests.Serialization
         public void Serialize_NullObject_ShouldThrow()
         {
             // Arrange
-            TestClass? testObject = null;
+            TestClass testObject = null!;
 
             // Act & Assert
             Should.Throw<ArgumentNullException>(() => 

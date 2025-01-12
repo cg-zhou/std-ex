@@ -1,12 +1,12 @@
 using Newtonsoft.Json;
 using StdEx.Media.Tmdb.Models;
+using StdEx.Serialization;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace StdEx.Media.Tmdb
 {
@@ -64,47 +64,45 @@ namespace StdEx.Media.Tmdb
             return CreateNfoXml(movie);
         }
 
-        private async Task<T> GetJsonAsync<T>(string url)
+        private async Task<T> GetJsonAsync<T>(string url) where T : class
         {
-            try
-            {
-                var response = await _httpClient.GetAsync(url);
-                var content = await response.Content.ReadAsStringAsync();
+            var response = await _httpClient.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new HttpRequestException($"API request failed: {response.StatusCode}, Content: {content}");
-                }
-
-                return JsonConvert.DeserializeObject<T>(content);
-            }
-            catch (Exception ex)
+            if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Request failed: {url}", ex);
+                throw new HttpRequestException($"API request failed: {response.StatusCode}, Content: {content}");
             }
+
+            var obj = JsonConvert.DeserializeObject<T>(content);
+            if (obj == null)
+            {
+                throw new Exception($"The desrialized object of response is null: {url}");
+            }
+            return obj;
         }
 
         private string CreateNfoXml(TmdbMovie movie)
         {
-            var doc = new XDocument(
-                new XElement("movie",
-                    new XElement("title", movie.Title),
-                    new XElement("originaltitle", movie.OriginalTitle),
-                    new XElement("sorttitle", movie.Title),
-                    new XElement("rating", movie.VoteAverage),
-                    new XElement("year", DateTime.Parse(movie.ReleaseDate).Year),
-                    new XElement("plot", movie.Overview),
-                    new XElement("thumb", $"{_baseImageUrl}{movie.PosterPath}"),
-                    new XElement("fanart", $"{_baseImageUrl}{movie.BackdropPath}"),
-                    new XElement("id", movie.Id),
-                    new XElement("genre", string.Join(" / ", movie.Genres.Select(g => g.Name))),
-                    new XElement("director", string.Join(" / ", movie.Credits.Crew
-                        .Where(c => c.Job == "Director")
-                        .Select(c => c.Name))),
-                    new XElement("premiered", movie.ReleaseDate)
-                ));
+            var nfo = new MovieNfo
+            {
+                Title = movie.Title,
+                OriginalTitle = movie.OriginalTitle,
+                SortTitle = movie.Title,
+                Rating = movie.VoteAverage,
+                Year = DateTime.Parse(movie.ReleaseDate).Year,
+                Plot = movie.Overview,
+                Thumb = $"{_baseImageUrl}{movie.PosterPath}",
+                Fanart = $"{_baseImageUrl}{movie.BackdropPath}",
+                Id = movie.Id,
+                Genre = string.Join(" / ", movie.Genres.Select(g => g.Name)),
+                Director = string.Join(" / ", movie.Credits.Crew
+                    .Where(c => c.Job == "Director")
+                    .Select(c => c.Name)),
+                Premiered = movie.ReleaseDate
+            };
 
-            return doc.ToString();
+            return XmlUtils.Serialize(nfo);
         }
     }
 }

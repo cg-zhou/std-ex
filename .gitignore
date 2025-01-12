@@ -51,3 +51,4 @@ _ReSharper*/
 
 # TMDB local settings
 **/tmdbsettings.local.json
+/StdEx.TmdbNfoLoader/Properties/launchSettings.json

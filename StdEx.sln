@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StdEx", "StdEx\StdEx.csproj", "{C68AEDA1-73AC-4971-A918-3A0DBEF9E553}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StdEx.Tests", "StdEx.Tests\StdEx.Tests.csproj", "{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StdEx.TmdbNfoLoader", "StdEx.TmdbNfoLoader\StdEx.TmdbNfoLoader.csproj", "{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

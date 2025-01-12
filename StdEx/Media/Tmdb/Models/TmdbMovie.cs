@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#nullable disable
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace StdEx.Media.Tmdb.Models
@@ -34,5 +35,26 @@ namespace StdEx.Media.Tmdb.Models
 
         [JsonProperty("credits")]
         public TmdbCredits Credits { get; set; }
+    }
+
+    public class TmdbGenre
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+    }
+
+    public class TmdbCredits
+    {
+        [JsonProperty("crew")]
+        public List<TmdbCrew> Crew { get; set; }
+    }
+
+    public class TmdbCrew
+    {
+        [JsonProperty("job")]
+        public string Job { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }

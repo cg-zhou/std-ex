@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -8,6 +9,9 @@ namespace StdEx.Serialization
 {
     public static class XmlUtils
     {
+        // Cache serializers to avoid repeated creation
+        private static readonly ConcurrentDictionary<Type, XmlSerializer> _serializers = new ConcurrentDictionary<Type, XmlSerializer>();
+
         /// <summary>
         /// Serializes an object to XML string
         /// </summary>
@@ -18,17 +22,16 @@ namespace StdEx.Serialization
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            var serializer = new XmlSerializer(typeof(T));
-            using (var stringWriter = new StringWriter())
-            using (var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings
+            var serializer = GetSerializer<T>();
+            using var stringWriter = new StringWriter();
+            using var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings
             {
                 Indent = true,
                 Encoding = Encoding.UTF8
-            }))
-            {
-                serializer.Serialize(xmlWriter, obj);
-                return stringWriter.ToString();
-            }
+            });
+
+            serializer.Serialize(xmlWriter, obj);
+            return stringWriter.ToString();
         }
 
         /// <summary>
@@ -41,11 +44,20 @@ namespace StdEx.Serialization
                 throw new ArgumentNullException(nameof(xml));
             }
 
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = GetSerializer<T>();
             using (var stringReader = new StringReader(xml))
             {
                 return (T)serializer.Deserialize(stringReader);
             }
+        }
+
+        private static XmlSerializer GetSerializer<T>()
+        {
+            var type = typeof(T);
+            return _serializers.GetOrAdd(type, t =>
+            {
+                return new XmlSerializer(t);
+            });
         }
     }
 }
