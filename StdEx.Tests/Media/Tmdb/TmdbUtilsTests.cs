@@ -3,87 +3,76 @@ using StdEx.Media.Tmdb;
 using StdEx.Media.Tmdb.Models;
 using StdEx.Serialization;
 
-namespace StdEx.Tests.Media.Tmdb
+namespace StdEx.Tests.Media.Tmdb;
+
+public class TmdbUtilsTests
 {
-    public class TmdbUtilsTests
+    private readonly TmdbUtils _tmdbUtils;
+
+    public TmdbUtilsTests()
     {
-        private readonly TmdbUtils _tmdbUtils;
+        var config = LoadTmdbConfig();
+        _tmdbUtils = new TmdbUtils(config);
+    }
 
-        public TmdbUtilsTests()
+    private TmdbConfig LoadTmdbConfig()
+    {
+        var configPath = Path.Combine(Directory.GetCurrentDirectory(), "tmdbsettings.local.json");
+        if (!File.Exists(configPath))
         {
-            var config = LoadTmdbConfig();
-            _tmdbUtils = new TmdbUtils(config);
+            throw new FileNotFoundException(
+                "Please create tmdbsettings.local.json based on tmdbsettings.example.json");
         }
 
-        private TmdbConfig LoadTmdbConfig()
-        {
-            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "tmdbsettings.local.json");
-            if (!File.Exists(configPath))
-            {
-                throw new FileNotFoundException(
-                    "Please create tmdbsettings.local.json based on tmdbsettings.example.json");
-            }
+        var json = File.ReadAllText(configPath);
+        var config = JsonUtils.Deserialize<TmdbConfig>(json);
+        config.ShouldNotBeNull("Failed to load TMDB configuration");
 
-            var json = File.ReadAllText(configPath);
-            var config = JsonUtils.Deserialize<TmdbConfig>(json);
-            config.ShouldNotBeNull("Failed to load TMDB configuration");
+        return config;
+    }
 
-            return config;
-        }
+    [Fact]
+    public async Task GetMovieNfo_ShouldWork()
+    {
+        var movieName = "Inception";
+        var result = await _tmdbUtils.GetMovieNfo(movieName);
 
-        [Fact]
-        public async Task GetMovieNfo_ShouldWork()
-        {
-            // Arrange
-            var movieName = "Inception";
+        result.ShouldNotBeNull();
+        result.Title.ShouldNotBeNullOrEmpty();
+        result.Plot.ShouldNotBeNullOrEmpty();
+        result.Year.ShouldBeGreaterThan(0);
+        result.Ratings.Rating.Value.ShouldBeGreaterThan(0);
+        result.Id.ShouldBeGreaterThan(0);
+        result.Art.Poster.ShouldNotBeNullOrEmpty();
+        result.Art.Fanart.ShouldNotBeNullOrEmpty();
+    }
 
-            // Act
-            var result = await _tmdbUtils.GetMovieNfo(movieName);
+    [Fact]
+    public async Task GetMovieNfo_WithInvalidMovie_ShouldThrow()
+    {
+        var invalidMovieName = "ThisMovieDoesNotExist12345";
 
-            // Assert
-            result.ShouldNotBeNull();
-            result.Title.ShouldNotBeNullOrEmpty();
-            result.Plot.ShouldNotBeNullOrEmpty();
-            result.Year.ShouldBeGreaterThan(0);
-            result.Ratings.Rating.Value.ShouldBeGreaterThan(0);
-            result.Id.ShouldBeGreaterThan(0);
-            result.Art.Poster.ShouldNotBeNullOrEmpty();
-            result.Art.Fanart.ShouldNotBeNullOrEmpty();
-        }
+        var exception = await Should.ThrowAsync<Exception>(async () =>
+            await _tmdbUtils.GetMovieNfo(invalidMovieName));
 
-        [Fact]
-        public async Task GetMovieNfo_WithInvalidMovie_ShouldThrow()
-        {
-            // Arrange
-            var invalidMovieName = "ThisMovieDoesNotExist12345";
+        exception.Message.ShouldBe($"Movie not found: {invalidMovieName}");
+    }
 
-            // Act & Assert
-            var exception = await Should.ThrowAsync<Exception>(async () =>
-                await _tmdbUtils.GetMovieNfo(invalidMovieName));
+    [Fact]
+    public async Task GetMovieNfo_ShouldGenerateValidXml()
+    {
+        var movieName = "Inception";
+        var movieNfo = await _tmdbUtils.GetMovieNfo(movieName);
+        var xml = XmlUtils.Serialize(movieNfo);
 
-            exception.Message.ShouldBe($"Movie not found: {invalidMovieName}");
-        }
-
-        [Fact]
-        public async Task GetMovieNfo_ShouldGenerateValidXml()
-        {
-            // Arrange
-            var movieName = "Inception";
-
-            // Act
-            var movieNfo = await _tmdbUtils.GetMovieNfo(movieName);
-            var xml = XmlUtils.Serialize(movieNfo);
-
-            // Assert
-            xml.ShouldNotBeNullOrEmpty();
-            xml.ShouldContain("<title>");
-            xml.ShouldContain("<plot>");
-            xml.ShouldContain("<year>");
-            xml.ShouldContain("<ratings>");
-            xml.ShouldContain("<rating name=\"tmdb\" max=\"10\">");
-            xml.ShouldContain("<art>");
-            xml.ShouldContain("<poster>");
-            xml.ShouldContain("<fanart>");
-        }
+        xml.ShouldNotBeNullOrEmpty();
+        xml.ShouldContain("<title>");
+        xml.ShouldContain("<plot>");
+        xml.ShouldContain("<year>");
+        xml.ShouldContain("<ratings>");
+        xml.ShouldContain("<rating name=\"tmdb\" max=\"10\">");
+        xml.ShouldContain("<art>");
+        xml.ShouldContain("<poster>");
+        xml.ShouldContain("<fanart>");
     }
 }
