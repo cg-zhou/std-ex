@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StdEx", "StdEx\StdEx.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StdEx.Tests", "StdEx.Tests\StdEx.Tests.csproj", "{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StdEx.TmdbNfoLoader", "StdEx.TmdbNfoLoader\StdEx.TmdbNfoLoader.csproj", "{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DD2D08D-035C-4DC5-A708-ED524BD9C7DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D06374D7-417D-47AC-BD8B-4B2CE1AF8355}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
