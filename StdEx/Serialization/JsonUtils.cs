@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 
 namespace StdEx.Serialization
 {
@@ -9,7 +10,7 @@ namespace StdEx.Serialization
             var result = JsonConvert.DeserializeObject<T>(json);
             if (result == null)
             {
-                throw new JsonSerializationException($"Failed to deserialize to type {typeof(T).Name}");
+                throw new Exception($"Failed to deserialize to type {typeof(T).Name}");
             }
             return result;
         }
