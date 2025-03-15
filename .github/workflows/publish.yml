@@ -2,8 +2,6 @@ name: Publish to NuGet
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
 
@@ -37,10 +35,15 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
     - name: Pack
+      if: success()
       run: dotnet pack StdEx/StdEx.csproj --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.gitversion.outputs.semVer }}
 
     - name: Publish to NuGet
+      if: success()
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json 
+      run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
