@@ -1,10 +1,21 @@
 using System.IO;
 
-namespace StdEx.IO
+namespace StdEx.Net
 {
-    public static class ContentTypeUtils
+    /// <summary>
+    /// Provides utility methods for working with MIME types.
+    /// </summary>
+    public static class MimeTypeUtils
     {
-        public static string GetContentType(string path)
+        /// <summary>
+        /// Gets the MIME type for the specified file path based on its extension.
+        /// </summary>
+        /// <param name="path">The file path whose MIME type to determine.</param>
+        /// <returns>
+        /// A string containing the MIME type. If the file extension is not recognized,
+        /// returns "application/octet-stream".
+        /// </returns>
+        public static string GetMimeType(string path)
         {
             var ext = Path.GetExtension(path).ToLowerInvariant();
             return ext switch

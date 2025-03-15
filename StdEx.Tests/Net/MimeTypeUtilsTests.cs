@@ -1,9 +1,9 @@
 using Shouldly;
-using StdEx.IO;
+using StdEx.Net;
 
-namespace StdEx.Tests.IO;
+namespace StdEx.Tests.Net;
 
-public class ContentTypeUtilsTests
+public class MimeTypeUtilsTests
 {
     [Theory]
     [InlineData("test.html", "text/html")]
@@ -16,25 +16,25 @@ public class ContentTypeUtilsTests
     [InlineData("test.svg", "image/svg+xml")]
     [InlineData("test.ico", "image/x-icon")]
     [InlineData("test.unknown", "application/octet-stream")]
-    public void GetContentType_WithDifferentExtensions_ShouldReturnCorrectMimeType(string path, string expectedContentType)
+    public void GetMimeType_WithDifferentExtensions_ShouldReturnCorrectMimeType(string path, string expectedMimeType)
     {
         // Act
-        var contentType = ContentTypeUtils.GetContentType(path);
+        var mimeType = MimeTypeUtils.GetMimeType(path);
 
         // Assert
-        contentType.ShouldBe(expectedContentType);
+        mimeType.ShouldBe(expectedMimeType);
     }
 
     [Theory]
     [InlineData("test")]
     [InlineData(".")]
     [InlineData("")]
-    public void GetContentType_WithInvalidPath_ShouldReturnOctetStream(string path)
+    public void GetMimeType_WithInvalidPath_ShouldReturnOctetStream(string path)
     {
         // Act
-        var contentType = ContentTypeUtils.GetContentType(path);
+        var mimeType = MimeTypeUtils.GetMimeType(path);
 
         // Assert
-        contentType.ShouldBe("application/octet-stream");
+        mimeType.ShouldBe("application/octet-stream");
     }
 }
