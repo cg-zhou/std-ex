@@ -60,7 +60,7 @@ namespace StdEx.Serialization
             var serializer = GetSerializer<T>();
             using (var stringReader = new StringReader(xml))
             {
-                return (T)serializer.Deserialize(stringReader);
+                return (T)serializer.Deserialize(stringReader)!;
             }
         }
 
